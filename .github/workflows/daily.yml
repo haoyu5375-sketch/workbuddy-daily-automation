@@ -1,0 +1,29 @@
+name: WorkBuddy 每日签到 + 派猫猫旅行
+
+on:
+  schedule:
+    # UTC 13:00 = 北京时间 21:00，每天一次（GitHub 定时可能有几分钟~几小时漂移，属正常）
+    - cron: '0 13 * * *'
+  workflow_dispatch: {}   # 允许在 Actions 页面手动触发，便于验收/补跑
+
+permissions:
+  contents: read
+
+jobs:
+  daily:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      TZ: 'Asia/Shanghai'                 # 日志时间按北京时间显示
+      WB_AUTH: ${{ secrets.WB_AUTH }}     # {access_token,refresh_token,domain,uid}
+      WB_WECOM_WEBHOOK: ${{ secrets.WB_WECOM_WEBHOOK }}
+      WB_CAT_STATUS_URL: ${{ secrets.WB_CAT_STATUS_URL }}
+      WB_CAT_CLAIM_URL: ${{ secrets.WB_CAT_CLAIM_URL }}
+      WB_CAT_DISPATCH_URL: ${{ secrets.WB_CAT_DISPATCH_URL }}
+      WB_CAT_TRAVEL_HOURS: ${{ secrets.WB_CAT_TRAVEL_HOURS }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Run daily task（签到 + 派猫猫旅行）
+        run: bash scripts/run.sh
